@@ -1,0 +1,72 @@
+'use strict';
+
+const fs = require('fs');
+
+process.stdin.resume();
+process.stdin.setEncoding('utf-8');
+
+let inputString = '';
+let currentLine = 0;
+
+process.stdin.on('data', inputStdin => {
+    inputString += inputStdin;
+});
+
+process.stdin.on('end', _ => {
+    inputString = inputString.replace(/\s*$/, '')
+        .split('\n')
+        .map(str => str.replace(/\s*$/, ''));
+
+    main();
+});
+
+function readLine() {
+    return inputString[currentLine++];
+}
+
+// Complete the minimumLoss function below.
+function minimumLoss(price) {
+
+//reduire le tableau en map pour reduire la complexité de la solution(mieux que de parcourir le tableau avec deux compteurs)
+     var map = []
+    price.forEach((element,index)=>{
+        map.push({price:element,annee:index})
+    })
+    //trier les prix en ordre croissant
+    map.sort((a,b)=>{
+        return b.price-a.price;
+    })
+   //Initialisation du minimum
+    var min = Number.POSITIVE_INFINITY;
+   var l=map.length-1; 
+
+    for(var i = 0;i<l;i++){
+
+        //Lauren doit vendre une année après qu'elle a acheté 
+
+       if  (map[i].annee<map[i+1].annee){
+
+      var  diff = map[i].price-map[i+1].price;
+  //La difference doit etre une perte et minimale
+        if((diff>0) &&  (diff<min) )
+            min = diff;
+    }
+    }
+    return min;
+
+
+}
+
+function main() {
+    const ws = fs.createWriteStream(process.env.OUTPUT_PATH);
+
+    const n = parseInt(readLine(), 10);
+
+    const price = readLine().split(' ').map(priceTemp => parseInt(priceTemp, 10));
+
+    let result = minimumLoss(price);
+
+    ws.write(result + "\n");
+
+    ws.end();
+}
